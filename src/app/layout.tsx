@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   },
   description:
     "F1 standings, race calendar, results, news, curiosities, and historical telemetry for fans.",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({

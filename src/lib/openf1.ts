@@ -254,11 +254,16 @@ export async function getYearsWithData(): Promise<number[]> {
 export async function getDriverHeadshots(
   year: number,
 ): Promise<Map<string, string>> {
+  const fallbacks: Record<string, string> = {
+    LIN: "https://www.formulaonehistory.com/wp-content/uploads/2025/12/Arvid-Lindblad-F1-2026.webp",
+    LAW: "https://www.formulaonehistory.com/wp-content/uploads/2025/12/Liam-Lawson-F1-2026.webp",
+  };
+
   try {
     const meetings = await getMeetings(year);
-    if (!meetings.length) return new Map();
+    if (!meetings.length) return new Map(Object.entries(fallbacks));
 
-    const headshots = new Map<string, string>();
+    const headshots = new Map<string, string>(Object.entries(fallbacks));
 
     for (const meeting of meetings) {
       if (headshots.size >= 20) break;
