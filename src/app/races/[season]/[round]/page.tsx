@@ -14,6 +14,7 @@ import {
   getSeasonSchedule,
   getSprintResults,
 } from "@/lib/jolpica";
+import { getDriverHeadshots } from "@/lib/openf1";
 
 export async function generateMetadata({
   params,
@@ -31,11 +32,12 @@ export default async function RaceDetailPage({
 }) {
   const { season, round } = await params;
 
-  const [race, schedule, qualifying, sprint] = await Promise.all([
+  const [race, schedule, qualifying, sprint, headshots] = await Promise.all([
     getRaceResults(season, round).catch(() => null),
     getSeasonSchedule(season).catch(() => []),
     getQualifyingResults(season, round).catch(() => null),
     getSprintResults(season, round).catch(() => null),
+    getDriverHeadshots(Number(season)).catch(() => new Map()),
   ]);
 
   const meta =
@@ -120,7 +122,7 @@ export default async function RaceDetailPage({
         {race?.Results?.length ? (
           <>
             <div className="mb-4 px-2 sm:px-0">
-              <RacePodium results={race.Results} />
+              <RacePodium results={race.Results} headshots={headshots} />
             </div>
             <ResultsTable results={race.Results} />
           </>

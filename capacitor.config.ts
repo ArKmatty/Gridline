@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'out',
   server: {
     androidScheme: 'https',
-    url: 'https://YOUR-APP-URL.vercel.app', // Replace with your deployed URL
+    url: 'https://gridlinef1.netlify.app',
   }
 };
 

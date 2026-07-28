@@ -1,9 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { RaceResult } from "@/lib/types";
 import { getTeamColor } from "@/lib/team-colors";
 import { PodiumBadge } from "@/components/ui/podium-badge";
 
-function PodiumCard({ result, position }: { result: RaceResult; position: "1" | "2" | "3" }) {
+function PodiumCard({ result, position, headshot }: { result: RaceResult; position: "1" | "2" | "3"; headshot?: string }) {
   const color = getTeamColor(result.Constructor.constructorId);
   const isP1 = position === "1";
 
@@ -16,16 +17,22 @@ function PodiumCard({ result, position }: { result: RaceResult; position: "1" | 
         <PodiumBadge position={position} />
       </div>
 
-      <div
-        className={`mt-2 flex h-16 w-16 items-center justify-center rounded-full border-2 text-lg font-bold transition group-hover:scale-105 ${isP1 ? "h-20 w-20 text-xl" : ""}`}
-        style={{
-          backgroundColor: color + "20",
-          borderColor: color,
-          color,
-        }}
-      >
-        {result.Driver.code ?? result.Driver.permanentNumber ?? "?"}
-      </div>
+      {headshot ? (
+        <div className={`relative overflow-hidden rounded-full border-2 transition group-hover:scale-105 ${isP1 ? "h-20 w-20" : "h-16 w-16"}`} style={{ borderColor: color }}>
+          <Image src={headshot} alt={`${result.Driver.givenName} ${result.Driver.familyName}`} fill className="object-cover" />
+        </div>
+      ) : (
+        <div
+          className={`mt-2 flex h-16 w-16 items-center justify-center rounded-full border-2 text-lg font-bold transition group-hover:scale-105 ${isP1 ? "h-20 w-20 text-xl" : ""}`}
+          style={{
+            backgroundColor: color + "20",
+            borderColor: color,
+            color,
+          }}
+        >
+          {result.Driver.code ?? result.Driver.permanentNumber ?? "?"}
+        </div>
+      )}
 
       <div className="mt-3 text-center">
         <p className={`font-semibold ${isP1 ? "text-base" : "text-sm"}`}>
@@ -48,7 +55,7 @@ function PodiumCard({ result, position }: { result: RaceResult; position: "1" | 
   );
 }
 
-export function RacePodium({ results }: { results: RaceResult[] }) {
+export function RacePodium({ results, headshots }: { results: RaceResult[]; headshots?: Map<string, string> }) {
   const podium = results.filter((r) => ["1", "2", "3"].includes(r.position));
   if (podium.length < 3) return null;
 
@@ -59,13 +66,13 @@ export function RacePodium({ results }: { results: RaceResult[] }) {
   return (
     <div className="grid grid-cols-3 items-end gap-3">
       <div className="translate-y-4">
-        <PodiumCard result={p2} position="2" />
+        <PodiumCard result={p2} position="2" headshot={p2.Driver.code ? headshots?.get(p2.Driver.code) : undefined} />
       </div>
       <div>
-        <PodiumCard result={p1} position="1" />
+        <PodiumCard result={p1} position="1" headshot={p1.Driver.code ? headshots?.get(p1.Driver.code) : undefined} />
       </div>
       <div className="translate-y-6">
-        <PodiumCard result={p3} position="3" />
+        <PodiumCard result={p3} position="3" headshot={p3.Driver.code ? headshots?.get(p3.Driver.code) : undefined} />
       </div>
     </div>
   );
