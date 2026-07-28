@@ -2,7 +2,7 @@
 
 import type { Driver, DriverStanding } from "@/lib/types";
 import { getTeamColor } from "@/lib/team-colors";
-import { formatPoints } from "@/lib/utils";
+import { formatPoints, cn } from "@/lib/utils";
 import { Trophy, Flag, Medal, Target } from "lucide-react";
 
 interface ComparisonStatsProps {
@@ -108,8 +108,4 @@ export function ComparisonStats({
       </div>
     </div>
   );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
 }

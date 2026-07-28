@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 
 export type MapPoint = { x: number; y: number; speed?: number };
 
@@ -22,6 +22,7 @@ export function TrackMap({
 }) {
   const [hoveredPoint, setHoveredPoint] = useState<MapPoint | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const lastMoveRef = useRef(0);
 
   const { segments, vb, startFinish } = useMemo(() => {
     if (points.length < 2) {
@@ -75,6 +76,10 @@ export function TrackMap({
   }, [points]);
 
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    const now = Date.now();
+    if (now - lastMoveRef.current < 50) return;
+    lastMoveRef.current = now;
+
     const svg = e.currentTarget;
     const rect = svg.getBoundingClientRect();
     const x = e.clientX - rect.left;

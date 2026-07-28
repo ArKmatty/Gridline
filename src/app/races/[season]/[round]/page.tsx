@@ -16,6 +16,8 @@ import {
 } from "@/lib/jolpica";
 import { getDriverHeadshots } from "@/lib/openf1";
 
+export const revalidate = 900;
+
 export async function generateMetadata({
   params,
 }: {

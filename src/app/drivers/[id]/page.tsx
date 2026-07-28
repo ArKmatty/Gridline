@@ -15,6 +15,8 @@ import { getDriverHeadshots } from "@/lib/openf1";
 import { currentSeason, formatPoints } from "@/lib/utils";
 import { getTeamColor } from "@/lib/team-colors";
 
+export const revalidate = 900;
+
 export async function generateMetadata({
   params,
 }: {

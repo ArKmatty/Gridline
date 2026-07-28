@@ -11,6 +11,8 @@ import { getSeasonSchedule } from "@/lib/jolpica";
 import { currentSeason } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
+export const revalidate = 3600;
+
 export const metadata = {
   title: "Calendar",
 };

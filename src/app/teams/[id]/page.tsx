@@ -12,6 +12,8 @@ import {
 } from "@/lib/jolpica";
 import { currentSeason, formatPoints } from "@/lib/utils";
 
+export const revalidate = 900;
+
 export async function generateMetadata({
   params,
 }: {

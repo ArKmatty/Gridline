@@ -19,7 +19,7 @@ function PodiumCard({ result, position, headshot }: { result: RaceResult; positi
 
       {headshot ? (
         <div className={`relative overflow-hidden rounded-full border-2 transition group-hover:scale-105 ${isP1 ? "h-20 w-20" : "h-16 w-16"}`} style={{ borderColor: color }}>
-          <Image src={headshot} alt={`${result.Driver.givenName} ${result.Driver.familyName}`} fill className="object-cover" />
+          <Image src={headshot} alt={`${result.Driver.givenName} ${result.Driver.familyName}`} fill className="object-cover" sizes="80px" />
         </div>
       ) : (
         <div

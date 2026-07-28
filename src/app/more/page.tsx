@@ -9,6 +9,8 @@ import {
 import { SectionHeader } from "@/components/ui/section-header";
 import { MoreHorizontal } from "lucide-react";
 
+export const revalidate = 3600;
+
 const links = [
   {
     href: "/calendar",

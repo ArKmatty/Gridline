@@ -54,7 +54,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
         <Link href="/" className="group flex shrink-0 items-center">
-          <Image src="/icon.png" alt="Gridline" width={120} height={36} className="h-9 w-auto" />
+          <Image src="/icon.png" alt="Gridline" width={120} height={36} className="h-9 w-auto" priority />
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-0.5 xl:flex">

@@ -5,6 +5,8 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getYearsWithData } from "@/lib/openf1";
 
+export const revalidate = 3600;
+
 export const metadata = {
   title: "Telemetry",
 };

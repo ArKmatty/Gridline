@@ -11,11 +11,13 @@ function NewsImage({
   alt,
   className,
   priority,
+  sizes = "(max-width: 768px) 100vw, 400px",
 }: {
   src?: string;
   alt: string;
   className?: string;
   priority?: boolean;
+  sizes?: string;
 }) {
   if (src) {
     return (
@@ -25,8 +27,7 @@ function NewsImage({
         fill
         priority={priority}
         className={cn("object-cover", className)}
-        sizes="(max-width: 768px) 100vw, 400px"
-        unoptimized
+        sizes={sizes}
       />
     );
   }
@@ -136,7 +137,7 @@ export function NewsThumbRow({ item }: { item: NewsItem }) {
       className="flex gap-3 py-3 transition hover:bg-white/[0.02]"
     >
       <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg border border-border">
-        <NewsImage src={item.image} alt="" />
+        <NewsImage src={item.image} alt="" sizes="80px" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 text-xs text-muted">

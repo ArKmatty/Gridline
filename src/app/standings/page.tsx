@@ -12,6 +12,8 @@ import {
 } from "@/lib/jolpica";
 import { currentSeason, cn } from "@/lib/utils";
 
+export const revalidate = 900;
+
 export const metadata = {
   title: "Standings",
 };

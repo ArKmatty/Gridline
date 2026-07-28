@@ -12,6 +12,8 @@ import { currentSeason, formatPoints } from "@/lib/utils";
 import { getTeamColor } from "@/lib/team-colors";
 import { DriversFilter } from "@/components/drivers/filter";
 
+export const revalidate = 900;
+
 export const metadata = {
   title: "Drivers",
 };

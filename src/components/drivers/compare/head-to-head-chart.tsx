@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import type { Driver, DriverStanding } from "@/lib/types";
 import { getTeamColor } from "@/lib/team-colors";
+import { cn } from "@/lib/utils";
 import { BarChart3 } from "lucide-react";
 
 interface HeadToHeadChartProps {
@@ -164,8 +165,4 @@ export function HeadToHeadChart({ driver1, driver2, standing1, standing2 }: Head
       </div>
     </div>
   );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
 }

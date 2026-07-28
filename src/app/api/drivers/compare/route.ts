@@ -17,35 +17,36 @@ export async function GET(request: Request) {
 
   try {
     const schedule = await getSeasonSchedule();
-    const races = [];
+    const results = await Promise.allSettled(
+      schedule.map((race) => getRaceResults(race.season, race.round))
+    );
 
-    for (const race of schedule) {
-      const results = await getRaceResults(race.season, race.round);
-      
-      if (!results?.Results) {
-        races.push({
+    const races = schedule.map((race, i) => {
+      const data = results[i].status === "fulfilled" ? results[i].value : null;
+
+      if (!data?.Results) {
+        return {
           round: race.round,
           raceName: race.raceName,
           driver1Position: null,
           driver2Position: null,
-        });
-        continue;
+        };
       }
 
-      const driver1Result = results.Results.find(
+      const driver1Result = data.Results.find(
         (r) => r.Driver.driverId === driver1
       );
-      const driver2Result = results.Results.find(
+      const driver2Result = data.Results.find(
         (r) => r.Driver.driverId === driver2
       );
 
-      races.push({
+      return {
         round: race.round,
         raceName: race.raceName,
         driver1Position: driver1Result ? parseInt(driver1Result.position) : null,
         driver2Position: driver2Result ? parseInt(driver2Result.position) : null,
-      });
-    }
+      };
+    });
 
     return NextResponse.json(races);
   } catch (error) {

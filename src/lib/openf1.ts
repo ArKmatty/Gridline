@@ -251,9 +251,16 @@ export async function getYearsWithData(): Promise<number[]> {
   return years;
 }
 
+const headshotCache = new Map<number, { data: Map<string, string>; expires: number }>();
+
 export async function getDriverHeadshots(
   year: number,
 ): Promise<Map<string, string>> {
+  const cached = headshotCache.get(year);
+  if (cached && cached.expires > Date.now()) {
+    return cached.data;
+  }
+
   const fallbacks: Record<string, string> = {
     LIN: "https://www.formulaonehistory.com/wp-content/uploads/2025/12/Arvid-Lindblad-F1-2026.webp",
     LAW: "https://www.formulaonehistory.com/wp-content/uploads/2025/12/Liam-Lawson-F1-2026.webp",
@@ -265,9 +272,7 @@ export async function getDriverHeadshots(
 
     const headshots = new Map<string, string>(Object.entries(fallbacks));
 
-    for (const meeting of meetings) {
-      if (headshots.size >= 20) break;
-
+    for (const meeting of meetings.slice(0, 3)) {
       const sessions = await getSessions(meeting.meeting_key);
       if (!sessions.length) continue;
 
@@ -279,10 +284,13 @@ export async function getDriverHeadshots(
           headshots.set(driver.name_acronym, driver.headshot_url);
         }
       }
+
+      if (headshots.size >= 20) break;
     }
 
+    headshotCache.set(year, { data: headshots, expires: Date.now() + 3600000 });
     return headshots;
   } catch {
-    return new Map();
+    return new Map(Object.entries(fallbacks));
   }
 }
