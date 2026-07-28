@@ -1,0 +1,122 @@
+[
+  {
+    "id": "1",
+    "title": "Why is it called a Grand Prix?",
+    "body": "“Grand Prix” is French for “great prize.” The term dates back to early motor races in France and stuck as the official name for F1 championship rounds.",
+    "category": "History"
+  },
+  {
+    "id": "2",
+    "title": "The chequered flag",
+    "body": "The origin of the chequered flag is debated, but one popular theory ties it to horse racing and early US auto races where a checkered pattern was easy to spot at speed.",
+    "category": "Traditions"
+  },
+  {
+    "id": "3",
+    "title": "DRS explained simply",
+    "body": "The Drag Reduction System opens a flap in the rear wing on designated straight zones when a driver is within one second of the car ahead, cutting drag and boosting top speed for overtaking.",
+    "category": "Tech"
+  },
+  {
+    "id": "4",
+    "title": "Pole position origin",
+    "body": "“Pole” comes from horse racing: the inside starting spot next to the rail (the pole). In F1 it means the front-row slot earned by the fastest qualifier.",
+    "category": "History"
+  },
+  {
+    "id": "5",
+    "title": "Halo safety device",
+    "body": "Introduced in 2018, the titanium halo protects the driver’s head. It has been credited with life-saving interventions in several major accidents since its debut.",
+    "category": "Safety"
+  },
+  {
+    "id": "6",
+    "title": "Why teams change tyre compounds",
+    "body": "Soft tyres grip more but degrade faster; hard tyres last longer with less peak grip. Strategy is a trade-off between pace, stint length, traffic, and weather.",
+    "category": "Strategy"
+  },
+  {
+    "id": "7",
+    "title": "Parc fermé rules",
+    "body": "After qualifying, cars enter parc fermé — a locked-down state where major setup changes are banned until the race, keeping the grid fair.",
+    "category": "Rules"
+  },
+  {
+    "id": "8",
+    "title": "Fastest lap point",
+    "body": "In modern F1, the driver who sets the fastest race lap can earn a bonus point — but only if they also finish in the top 10.",
+    "category": "Rules"
+  },
+  {
+    "id": "9",
+    "title": "Monaco’s unique challenge",
+    "body": "The Monaco street circuit is slow by F1 standards but brutally punishing. Barriers are centimetres away, so mistakes are rarely forgiven and overtaking is extremely difficult.",
+    "category": "Circuits"
+  },
+  {
+    "id": "10",
+    "title": "What “undercut” means",
+    "body": "An undercut is pitting earlier than a rival so you can use fresh tyres to jump them when they stop later. The opposite late-stop move is an overcut.",
+    "category": "Strategy"
+  },
+  {
+    "id": "11",
+    "title": "Blue flags",
+    "body": "Blue flags warn a lapped car that faster traffic is approaching. Ignoring them repeatedly can earn a penalty for holding up race leaders.",
+    "category": "Rules"
+  },
+  {
+    "id": "12",
+    "title": "Why engines are called power units",
+    "body": "Modern F1 hybrids combine an internal combustion engine with energy recovery systems (ERS). Together they’re called a power unit, not just an engine.",
+    "category": "Tech"
+  },
+  {
+    "id": "13",
+    "title": "Formation lap purpose",
+    "body": "Before lights out, drivers complete a formation lap to warm tyres and brakes, check systems, and line up correctly on the grid.",
+    "category": "Race day"
+  },
+  {
+    "id": "14",
+    "title": "Safety Car vs Virtual Safety Car",
+    "body": "A Safety Car bunches the field behind a real car at reduced speed. A Virtual Safety Car forces all cars to slow by a set delta without lining up behind a lead car.",
+    "category": "Safety"
+  },
+  {
+    "id": "15",
+    "title": "Team radio is delayed",
+    "body": "Broadcast team radio is often on a short delay and selectively aired. Not every message fans hear is live, and not every message is shared.",
+    "category": "Broadcast"
+  },
+  {
+    "id": "16",
+    "title": "Why rain changes everything",
+    "body": "Wet races amplify driver skill and strategy. Intermediate and full-wet tyres, visibility spray, and rapidly evolving grip can scramble the entire order.",
+    "category": "Race day"
+  },
+  {
+    "id": "17",
+    "title": "Constructor vs driver titles",
+    "body": "F1 awards two championships: Drivers’ (individual points) and Constructors’ (combined points from both team cars). Teams fight hardest for the latter commercially.",
+    "category": "Championship"
+  },
+  {
+    "id": "18",
+    "title": "The number 1 privilege",
+    "body": "The reigning world champion may race with number 1 instead of their permanent number. Some champions keep their usual number for branding reasons.",
+    "category": "Traditions"
+  },
+  {
+    "id": "19",
+    "title": "Pit stop speed",
+    "body": "Top teams routinely change four tyres in roughly two seconds. That choreography is one of the most practiced and measured operations in sport.",
+    "category": "Tech"
+  },
+  {
+    "id": "20",
+    "title": "Why telemetry matters",
+    "body": "Telemetry streams car data — speed, throttle, brake, gears, temps — to the garage. Engineers use it to coach drivers, manage tyres, and diagnose issues in real time.",
+    "category": "Tech"
+  }
+]
