@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -54,7 +55,7 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
         <Link href="/" className="group flex shrink-0 items-center gap-2.5">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-white shadow-[0_0_24px_rgba(225,6,0,0.35)] transition group-hover:scale-105">
-            <Flag className="h-4 w-4" aria-hidden="true" />
+            <Image src="/icon.png" alt="Gridline" width={24} height={24} className="h-6 w-6" />
           </span>
           <span className="text-lg font-bold tracking-tight">
             Grid<span className="text-accent">line</span>
