@@ -1,16 +1,16 @@
-// Team logos from Wikimedia Commons
+// Team logos from local storage
 const TEAM_LOGOS: Record<string, string> = {
   mercedes: "/images/teams/mercedes.svg",
-  red_bull: "/images/teams/red_bull.png",
+  red_bull: "/images/teams/red_bull.jpg",
   ferrari: "/images/teams/ferrari.png",
   mclaren: "/images/teams/mclaren.png",
   alpine: "/images/teams/alpine.png",
   aston_martin: "/images/teams/aston_martin.svg",
   williams: "/images/teams/williams.svg",
-  rb: "/images/teams/rb.png",
+  rb: "/images/teams/RB-Racing_Bulls_Logo.png",
   audi: "/images/teams/audi.svg",
-  haas: "/images/teams/haas.svg",
-  cadillac: "/images/teams/cadillac.png",
+  haas: "/images/teams/TGR_Haas_F1_Team_Logo_(2026).svg.webp",
+  cadillac: "/images/teams/Cadillac_Formula_1_Team_logo.png",
   kick_sauber: "/images/teams/kick_sauber.svg",
 };
 
