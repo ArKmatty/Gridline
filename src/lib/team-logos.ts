@@ -1,16 +1,17 @@
 // Team logos from Wikimedia Commons
 const TEAM_LOGOS: Record<string, string> = {
-  mercedes: "https://upload.wikimedia.org/wikipedia/commons/f/fc/Mercedes-AMG_Petronas_F1_Team_logo_%282026%29.svg",
-  red_bull: "https://upload.wikimedia.org/wikipedia/it/c/cb/Oracle_Red_Bull_Racing_2026.jpg",
-  ferrari: "https://upload.wikimedia.org/wikipedia/it/9/91/Scuderia_Ferrari_HP.png",
-  mclaren: "https://upload.wikimedia.org/wikipedia/commons/2/20/McLaren_Racing_logo.png",
-  alpine: "https://upload.wikimedia.org/wikipedia/commons/4/4a/BWT_Alpine_F1_Team_Logo.png",
-  aston_martin: "https://upload.wikimedia.org/wikipedia/it/7/7d/Aston_Martin_2024_Logo.svg",
-  williams: "https://upload.wikimedia.org/wikipedia/commons/1/12/Atlassian_Williams_F1_Team_logo.svg",
-  rb: "https://upload.wikimedia.org/wikipedia/it/a/a3/RB-Racing_Bulls_Logo.png",
-  audi: "https://upload.wikimedia.org/wikipedia/commons/0/03/Audif1.com_logo17_%28cropped%29.svg",
-  haas: "https://upload.wikimedia.org/wikipedia/commons/1/18/TGR_Haas_F1_Team_Logo_%282026%29.svg",
-  cadillac: "https://upload.wikimedia.org/wikipedia/commons/d/d8/Cadillac_Formula_1_Team_logo.png",
+  mercedes: "/images/teams/mercedes.svg",
+  red_bull: "/images/teams/red_bull.png",
+  ferrari: "/images/teams/ferrari.png",
+  mclaren: "/images/teams/mclaren.png",
+  alpine: "/images/teams/alpine.png",
+  aston_martin: "/images/teams/aston_martin.svg",
+  williams: "/images/teams/williams.svg",
+  rb: "/images/teams/rb.png",
+  audi: "/images/teams/audi.svg",
+  haas: "/images/teams/haas.svg",
+  cadillac: "/images/teams/cadillac.png",
+  kick_sauber: "/images/teams/kick_sauber.svg",
 };
 
 export function getTeamLogo(constructorId: string): string | undefined {

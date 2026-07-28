@@ -262,8 +262,8 @@ export async function getDriverHeadshots(
   }
 
   const fallbacks: Record<string, string> = {
-    LIN: "https://www.formulaonehistory.com/wp-content/uploads/2025/12/Arvid-Lindblad-F1-2026.webp",
-    LAW: "https://www.formulaonehistory.com/wp-content/uploads/2025/12/Liam-Lawson-F1-2026.webp",
+    LIN: "/images/drivers/lin.webp",
+    LAW: "/images/drivers/law.webp",
   };
 
   try {
@@ -281,7 +281,9 @@ export async function getDriverHeadshots(
 
       for (const driver of drivers) {
         if (driver.headshot_url && driver.name_acronym && !headshots.has(driver.name_acronym)) {
-          headshots.set(driver.name_acronym, driver.headshot_url);
+          const ext = driver.headshot_url.split(".").pop()?.split("?")[0] || "jpg";
+          const localPath = `/images/drivers/${driver.name_acronym.toLowerCase()}.${ext}`;
+          headshots.set(driver.name_acronym, localPath);
         }
       }
 
