@@ -281,8 +281,7 @@ export async function getDriverHeadshots(
 
       for (const driver of drivers) {
         if (driver.headshot_url && driver.name_acronym && !headshots.has(driver.name_acronym)) {
-          const ext = driver.headshot_url.split(".").pop()?.split("?")[0] || "jpg";
-          const localPath = `/images/drivers/${driver.name_acronym.toLowerCase()}.${ext}`;
+          const localPath = `/images/drivers/${driver.name_acronym.toLowerCase()}.webp`;
           headshots.set(driver.name_acronym, localPath);
         }
       }
