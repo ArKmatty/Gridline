@@ -53,13 +53,8 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
-        <Link href="/" className="group flex shrink-0 items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-white shadow-[0_0_24px_rgba(225,6,0,0.35)] transition group-hover:scale-105">
-            <Image src="/icon.png" alt="Gridline" width={24} height={24} className="h-6 w-6" />
-          </span>
-          <span className="text-lg font-bold tracking-tight">
-            Grid<span className="text-accent">line</span>
-          </span>
+        <Link href="/" className="group flex shrink-0 items-center">
+          <Image src="/icon.png" alt="Gridline" width={120} height={36} className="h-9 w-auto" />
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-0.5 xl:flex">
