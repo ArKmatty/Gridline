@@ -49,7 +49,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Mobile" className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur-xl lg:hidden">
+    <nav aria-label="Mobile" className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background lg:hidden">
       <div className="mx-auto grid max-w-7xl grid-cols-5 px-1 pb-[env(safe-area-inset-bottom)]">
         {tabs.map((tab) => {
           const Icon = tab.icon;

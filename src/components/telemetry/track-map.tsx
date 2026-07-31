@@ -24,10 +24,10 @@ export function TrackMap({
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const lastMoveRef = useRef(0);
 
-  const { segments, vb, startFinish } = useMemo(() => {
+  const { pathsByColor, vb, startFinish } = useMemo(() => {
     if (points.length < 2) {
       return {
-        segments: [] as { d: string; color: string }[],
+        pathsByColor: [] as { d: string; color: string }[],
         vb: "0 0 100 100",
         startFinish: null,
       };
@@ -35,10 +35,12 @@ export function TrackMap({
 
     const xs = points.map((p) => p.x);
     const ys = points.map((p) => p.y);
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
-    const minY = Math.min(...ys);
-    const maxY = Math.max(...ys);
+    
+    // Use reduce instead of spread to avoid call stack limits on large arrays
+    const minX = xs.reduce((a, b) => Math.min(a, b), Infinity);
+    const maxX = xs.reduce((a, b) => Math.max(a, b), -Infinity);
+    const minY = ys.reduce((a, b) => Math.min(a, b), Infinity);
+    const maxY = ys.reduce((a, b) => Math.max(a, b), -Infinity);
     const pad = 20;
     const w = Math.max(maxX - minX, 1);
     const h = Math.max(maxY - minY, 1);
@@ -52,24 +54,34 @@ export function TrackMap({
 
     const projected = points.map(proj);
     const speeds = projected.map((p) => p.speed);
-    const minS = Math.min(...speeds);
-    const maxS = Math.max(...speeds);
+    const minS = speeds.reduce((a, b) => Math.min(a, b), Infinity);
+    const maxS = speeds.reduce((a, b) => Math.max(a, b), -Infinity);
 
-    const segs: { d: string; color: string }[] = [];
+    // Group segments by color
+    const buckets = new Map<string, string[]>();
+    
     for (let i = 1; i < projected.length; i++) {
       const a = projected[i - 1];
       const b = projected[i];
-      segs.push({
-        d: `M ${a.x} ${a.y} L ${b.x} ${b.y}`,
-        color: speedColor((a.speed + b.speed) / 2, minS, maxS),
-      });
+      const avgSpeed = (a.speed + b.speed) / 2;
+      const color = speedColor(avgSpeed, minS, maxS);
+      
+      if (!buckets.has(color)) {
+        buckets.set(color, []);
+      }
+      buckets.get(color)!.push(`M ${a.x} ${a.y} L ${b.x} ${b.y}`);
     }
+
+    const pathsByColor = Array.from(buckets.entries()).map(([color, segments]) => ({
+      d: segments.join(" "),
+      color,
+    }));
 
     // Start/finish line (first point)
     const startFinishPoint = projected[0];
 
     return {
-      segments: segs,
+      pathsByColor,
       vb: `0 0 ${360 + pad * 2} ${360 + pad * 2}`,
       startFinish: startFinishPoint,
     };
@@ -132,11 +144,11 @@ export function TrackMap({
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setHoveredPoint(null)}
         >
-          {segments.map((s, i) => (
+          {pathsByColor.map((path, i) => (
             <path
               key={i}
-              d={s.d}
-              stroke={s.color}
+              d={path.d}
+              stroke={path.color}
               strokeWidth={3}
               fill="none"
               strokeLinecap="round"

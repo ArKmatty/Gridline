@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Share2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -13,8 +13,15 @@ interface ShareButtonProps {
 
 export function ShareButton({ title, url, className, size = "md" }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
+  const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const shareUrl = url || (typeof window !== "undefined" ? window.location.href : "");
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
+    };
+  }, []);
 
   const handleShare = async () => {
     // Try Web Share API first (mobile)
@@ -36,7 +43,8 @@ export function ShareButton({ title, url, className, size = "md" }: ShareButtonP
       try {
         await navigator.clipboard.writeText(shareUrl);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
+        copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
       } catch (err) {
         console.error("Failed to copy:", err);
       }

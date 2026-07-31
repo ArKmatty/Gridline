@@ -39,7 +39,6 @@ export function TeamLogo({ teamName, teamId, size = "md" }: TeamLogoProps) {
           width={size === "lg" ? 56 : size === "md" ? 40 : 24}
           height={size === "lg" ? 56 : size === "md" ? 40 : 24}
           className="object-contain p-1"
-          unoptimized
         />
       </div>
     );

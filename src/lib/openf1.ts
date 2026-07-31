@@ -272,20 +272,25 @@ export async function getDriverHeadshots(
 
     const headshots = new Map<string, string>(Object.entries(fallbacks));
 
-    for (const meeting of meetings.slice(0, 3)) {
+    const meetingPromises = meetings.slice(0, 3).map(async (meeting) => {
       const sessions = await getSessions(meeting.meeting_key);
-      if (!sessions.length) continue;
+      if (!sessions.length) return [];
 
       const raceSession = sessions.find((s) => s.session_type === "Race") || sessions[0];
       const drivers = await getSessionDrivers(raceSession.session_key);
 
+      return drivers.filter((d) => d.headshot_url && d.name_acronym);
+    });
+
+    const results = await Promise.all(meetingPromises);
+
+    for (const drivers of results) {
       for (const driver of drivers) {
-        if (driver.headshot_url && driver.name_acronym && !headshots.has(driver.name_acronym)) {
+        if (driver.name_acronym && !headshots.has(driver.name_acronym)) {
           const localPath = `/images/drivers/${driver.name_acronym.toLowerCase()}.webp`;
           headshots.set(driver.name_acronym, localPath);
         }
       }
-
       if (headshots.size >= 20) break;
     }
 

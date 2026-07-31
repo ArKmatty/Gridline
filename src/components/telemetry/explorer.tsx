@@ -1,36 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  Activity,
   ArrowLeft,
-  ArrowRight,
   Check,
   ChevronDown,
   Copy,
   Flag,
-  Gauge,
   History,
   Loader2,
-  Map as MapIcon,
   MapPin,
   Timer,
   User,
   GitCompare,
 } from "lucide-react";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import type {
   OpenF1Driver,
   OpenF1Lap,
@@ -44,8 +28,8 @@ import {
   type RecentTelemetry,
 } from "@/lib/favorites";
 import { cn, formatMs } from "@/lib/utils";
-import { TrackMap, type MapPoint } from "./track-map";
-import { TelemetryExportButton } from "./export-button";
+import type { MapPoint } from "./track-map";
+import { TelemetryCharts } from "./charts";
 
 type Step = 1 | 2 | 3;
 
@@ -104,14 +88,20 @@ export function TelemetryExplorer({ years }: { years: number[] }) {
   const [loadingMeta, setLoadingMeta] = useState(false);
   const [loadingChart, setLoadingChart] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showMore, setShowMore] = useState(false);
   const [copied, setCopied] = useState(false);
   const [recent, setRecent] = useState<RecentTelemetry[]>([]);
   const [urlReady, setUrlReady] = useState(false);
+  const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setRecent(readRecentTelemetry());
     setUrlReady(true);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
+    };
   }, []);
 
   const loadJson = useCallback(async <T,>(url: string): Promise<T> => {
@@ -369,12 +359,12 @@ export function TelemetryExplorer({ years }: { years: number[] }) {
   const selectedLap = laps.find((l) => l.lap_number === lapNumber);
   const bestLapNum = useMemo(() => {
     if (!laps.length) return null;
-    return [...laps].sort(
-      (a, b) => (a.lap_duration ?? 999) - (b.lap_duration ?? 999),
-    )[0]?.lap_number;
+    return laps.reduce((best, lap) => {
+      const dur = lap.lap_duration ?? 999;
+      const bestDur = best?.lap_duration ?? 999;
+      return dur < bestDur ? lap : best;
+    }, laps[0])?.lap_number ?? null;
   }, [laps]);
-  const colorA = driverA ? `#${driverA.team_colour}` : "#e10600";
-  const colorB = driverB ? `#${driverB.team_colour}` : "#60a5fa";
 
   const chartData = useMemo(() => {
     if (!seriesA.length) return [];
@@ -419,14 +409,12 @@ export function TelemetryExplorer({ years }: { years: number[] }) {
     return rows;
   }, [seriesA, seriesB, driverA, driverB]);
 
-  const labelA = driverA?.name_acronym ?? "Driver";
-  const labelB = driverB?.name_acronym ?? "Compare";
-
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
+      if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
+      copiedTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
     } catch {
       /* ignore */
     }
@@ -787,305 +775,18 @@ export function TelemetryExplorer({ years }: { years: number[] }) {
             )}
           </div>
 
-          {/* Speed */}
-          <div className="card p-4 sm:p-6">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <h2 className="flex items-center gap-2 font-semibold">
-                <Gauge className="h-4 w-4 text-accent" />
-                Speed trace
-              </h2>
-              <div className="flex items-center gap-2">
-                {driverA && selectedLap && (
-                  <TelemetryExportButton
-                    data={seriesA}
-                    driverName={driverA.broadcast_name || `Driver ${driverA.driver_number}`}
-                    lapNumber={selectedLap.lap_number}
-                  />
-                )}
-                {loadingChart && (
-                  <span className="inline-flex items-center gap-1.5 text-xs text-accent">
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    Loading…
-                  </span>
-                )}
-              </div>
-            </div>
-            {error && (
-              <div className="mb-4 rounded-xl border border-accent/30 bg-accent-soft px-4 py-3 text-sm">
-                {error}
-                <button
-                  type="button"
-                  onClick={() => void loadTelemetry()}
-                  className="ml-3 font-medium text-accent underline"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
-            <ChartFrame
-              empty={!chartData.length && !loadingChart}
-              emptyLabel={
-                driverNumber === ""
-                  ? "Select a driver to load telemetry automatically"
-                  : "No telemetry samples for this lap"
-              }
-              loading={loadingChart && !chartData.length}
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} syncId="telemetry">
-                  <CartesianGrid stroke="rgba(255,255,255,0.06)" />
-                  <XAxis
-                    dataKey="t"
-                    stroke="#71717a"
-                    tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                  />
-                  <YAxis
-                    stroke="#71717a"
-                    tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                    width={48}
-                  />
-                  <Tooltip contentStyle={tooltipStyle} />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey={labelA}
-                    name={`${labelA} speed`}
-                    stroke={colorA}
-                    dot={false}
-                    strokeWidth={2}
-                    isAnimationActive={false}
-                  />
-                  {seriesB.length > 0 && (
-                    <Line
-                      type="monotone"
-                      dataKey={labelB}
-                      name={`${labelB} speed`}
-                      stroke={colorB}
-                      dot={false}
-                      strokeWidth={2}
-                      strokeDasharray="4 4"
-                      isAnimationActive={false}
-                    />
-                  )}
-                </LineChart>
-              </ResponsiveContainer>
-            </ChartFrame>
-          </div>
-
-          {mapPoints.length > 2 && (
-            <div className="card p-4 sm:p-6">
-              <h2 className="mb-4 flex items-center gap-2 font-semibold">
-                <MapIcon className="h-4 w-4 text-accent" />
-                Track map
-              </h2>
-              <TrackMap points={mapPoints} />
-            </div>
-          )}
-
-          {chartData.length > 0 && (
-            <div className="card p-4 sm:p-6">
-              <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
-                <h2 className="flex items-center gap-2 font-semibold">
-                  <Activity className="h-4 w-4 text-accent" />
-                  Pedal inputs
-                </h2>
-                <p className="text-xs text-muted">
-                  Throttle 0–100%. Brake is on/off (OpenF1).
-                </p>
-              </div>
-              <div className="space-y-6">
-                <div>
-                  <div className="mb-2 flex items-center gap-2 text-sm font-medium">
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                    Throttle (%)
-                  </div>
-                  <ChartFrame empty={false} loading={false} height={200}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartData} syncId="telemetry">
-                        <CartesianGrid stroke="rgba(255,255,255,0.06)" />
-                        <XAxis
-                          dataKey="t"
-                          stroke="#71717a"
-                          tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                        />
-                        <YAxis
-                          stroke="#71717a"
-                          tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                          width={36}
-                          domain={[0, 100]}
-                        />
-                        <Tooltip contentStyle={tooltipStyle} />
-                        <Area
-                          type="stepAfter"
-                          dataKey={`${labelA}_thr`}
-                          name={labelA}
-                          stroke="#22c55e"
-                          fill="#22c55e"
-                          fillOpacity={0.25}
-                          strokeWidth={1.75}
-                          isAnimationActive={false}
-                          dot={false}
-                        />
-                        {seriesB.length > 0 && (
-                          <Area
-                            type="stepAfter"
-                            dataKey={`${labelB}_thr`}
-                            name={labelB}
-                            stroke="#86efac"
-                            fill="#86efac"
-                            fillOpacity={0.12}
-                            strokeWidth={1.5}
-                            strokeDasharray="4 4"
-                            isAnimationActive={false}
-                            dot={false}
-                          />
-                        )}
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </ChartFrame>
-                </div>
-                <div>
-                  <div className="mb-2 flex items-center gap-2 text-sm font-medium">
-                    <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-                    Brake (on / off)
-                  </div>
-                  <ChartFrame empty={false} loading={false} height={140}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartData} syncId="telemetry">
-                        <CartesianGrid stroke="rgba(255,255,255,0.06)" />
-                        <XAxis
-                          dataKey="t"
-                          stroke="#71717a"
-                          tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                        />
-                        <YAxis
-                          stroke="#71717a"
-                          tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                          width={36}
-                          domain={[0, 100]}
-                          ticks={[0, 100]}
-                          tickFormatter={(v) => (v === 100 ? "ON" : "OFF")}
-                        />
-                        <Tooltip
-                          contentStyle={tooltipStyle}
-                          formatter={(value) => {
-                            const n = Number(value ?? 0);
-                            return [n > 0 ? "ON" : "OFF", "Brake"];
-                          }}
-                        />
-                        <Area
-                          type="stepAfter"
-                          dataKey={`${labelA}_brk`}
-                          name={labelA}
-                          stroke="#f59e0b"
-                          fill="#f59e0b"
-                          fillOpacity={0.35}
-                          strokeWidth={1.75}
-                          isAnimationActive={false}
-                          dot={false}
-                        />
-                        {seriesB.length > 0 && (
-                          <Area
-                            type="stepAfter"
-                            dataKey={`${labelB}_brk`}
-                            name={labelB}
-                            stroke="#fcd34d"
-                            fill="#fcd34d"
-                            fillOpacity={0.15}
-                            strokeWidth={1.5}
-                            strokeDasharray="4 4"
-                            isAnimationActive={false}
-                            dot={false}
-                          />
-                        )}
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </ChartFrame>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {chartData.length > 0 && (
-            <div className="card overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setShowMore((v) => !v)}
-                className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-semibold hover:bg-white/[0.02]"
-              >
-                <span className="flex items-center gap-2">
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 transition",
-                      showMore && "rotate-180",
-                    )}
-                  />
-                  More traces (RPM & gear)
-                </span>
-                <ArrowRight className="h-4 w-4 text-muted" />
-              </button>
-              {showMore && (
-                <div className="space-y-6 border-t border-border p-4 sm:p-6">
-                  <ChartFrame empty={false} loading={false} height={220}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={chartData} syncId="telemetry">
-                        <CartesianGrid stroke="rgba(255,255,255,0.06)" />
-                        <XAxis
-                          dataKey="t"
-                          stroke="#71717a"
-                          tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                        />
-                        <YAxis
-                          stroke="#71717a"
-                          tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                          width={48}
-                        />
-                        <Tooltip contentStyle={tooltipStyle} />
-                        <Line
-                          type="monotone"
-                          dataKey={`${labelA}_rpm`}
-                          name={`${labelA} RPM`}
-                          stroke="#60a5fa"
-                          dot={false}
-                          strokeWidth={1.75}
-                          isAnimationActive={false}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </ChartFrame>
-                  <ChartFrame empty={false} loading={false} height={180}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={chartData} syncId="telemetry">
-                        <CartesianGrid stroke="rgba(255,255,255,0.06)" />
-                        <XAxis
-                          dataKey="t"
-                          stroke="#71717a"
-                          tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                        />
-                        <YAxis
-                          stroke="#71717a"
-                          tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                          width={32}
-                          domain={[0, 8]}
-                          allowDecimals={false}
-                        />
-                        <Tooltip contentStyle={tooltipStyle} />
-                        <Line
-                          type="stepAfter"
-                          dataKey={`${labelA}_gear`}
-                          name={`${labelA} gear`}
-                          stroke="#a78bfa"
-                          dot={false}
-                          strokeWidth={1.75}
-                          isAnimationActive={false}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </ChartFrame>
-                </div>
-              )}
-            </div>
-          )}
+          <TelemetryCharts
+            chartData={chartData}
+            seriesA={seriesA}
+            seriesB={seriesB}
+            mapPoints={mapPoints}
+            driverA={driverA}
+            driverB={driverB}
+            selectedLap={selectedLap}
+            loadingChart={loadingChart}
+            error={error}
+            onRetry={() => void loadTelemetry()}
+          />
         </div>
       )}
 
@@ -1122,13 +823,6 @@ function bootstrapStep(
   return 1;
 }
 
-const tooltipStyle = {
-  background: "#101218",
-  border: "1px solid #232632",
-  borderRadius: 12,
-  fontSize: 12,
-};
-
 function Field({
   label,
   children,
@@ -1155,51 +849,31 @@ function LoadingBlock({ label }: { label: string }) {
   );
 }
 
-function ChartFrame({
-  children,
-  empty,
-  emptyLabel,
-  loading,
-  height = 320,
-}: {
-  children?: React.ReactNode;
-  empty: boolean;
-  emptyLabel?: string;
-  loading: boolean;
-  height?: number;
-}) {
-  return (
-    <div className="w-full" style={{ height }}>
-      {loading ? (
-        <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted">
-          <Loader2 className="mr-2 h-4 w-4 animate-spin text-accent" />
-          Fetching car data…
-        </div>
-      ) : empty ? (
-        <div className="flex h-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border px-4 text-center text-sm text-muted">
-          <Gauge className="h-8 w-8 opacity-40" />
-          {emptyLabel}
-        </div>
-      ) : (
-        children
-      )}
-    </div>
-  );
-}
-
 function nearestPoint(
   points: TelemetryPoint[],
   t: number,
 ): TelemetryPoint | null {
   if (!points.length) return null;
-  let best = points[0];
-  let bestDist = Math.abs(points[0].t - t);
-  for (let i = 1; i < points.length; i++) {
-    const d = Math.abs(points[i].t - t);
-    if (d < bestDist) {
-      best = points[i];
-      bestDist = d;
+  
+  // Binary search since points are sorted by t
+  let lo = 0;
+  let hi = points.length - 1;
+  
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (points[mid].t < t) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
     }
   }
-  return best;
+  
+  // Check lo and lo-1 to find closest
+  if (lo > 0) {
+    const distLo = Math.abs(points[lo].t - t);
+    const distPrev = Math.abs(points[lo - 1].t - t);
+    if (distPrev < distLo) return points[lo - 1];
+  }
+  
+  return points[lo];
 }

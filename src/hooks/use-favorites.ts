@@ -10,17 +10,33 @@ import {
   writeFavorites,
 } from "@/lib/favorites";
 
-function subscribe(cb: () => void) {
-  window.addEventListener("storage", cb);
-  window.addEventListener("gridline-favorites", cb);
-  return () => {
-    window.removeEventListener("storage", cb);
-    window.removeEventListener("gridline-favorites", cb);
-  };
-}
+let cachedSnapshot: string | null = null;
+let cachedParsed: Favorite[] | null = null;
 
 function getSnapshot() {
-  return JSON.stringify(readFavorites());
+  if (cachedSnapshot === null) {
+    cachedParsed = readFavorites();
+    cachedSnapshot = JSON.stringify(cachedParsed);
+  }
+  return cachedSnapshot;
+}
+
+function invalidateSnapshot() {
+  cachedSnapshot = null;
+  cachedParsed = null;
+}
+
+function subscribe(cb: () => void) {
+  const handler = () => {
+    invalidateSnapshot();
+    cb();
+  };
+  window.addEventListener("storage", handler);
+  window.addEventListener("gridline-favorites", handler);
+  return () => {
+    window.removeEventListener("storage", handler);
+    window.removeEventListener("gridline-favorites", handler);
+  };
 }
 
 function getServerSnapshot() {
@@ -29,11 +45,13 @@ function getServerSnapshot() {
 
 export function useFavorites() {
   const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const favorites: Favorite[] = JSON.parse(raw) as Favorite[];
+  // Use cached parsed result if available (from getSnapshot), otherwise parse
+  const favorites: Favorite[] = cachedParsed ?? (JSON.parse(raw) as Favorite[]);
 
   const toggle = useCallback((item: Favorite) => {
     const next = toggleFavorite(item, readFavorites());
     writeFavorites(next);
+    invalidateSnapshot();
     window.dispatchEvent(new Event("gridline-favorites"));
   }, []);
 

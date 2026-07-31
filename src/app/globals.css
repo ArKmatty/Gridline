@@ -118,23 +118,17 @@ body {
 
 .shine-border {
   position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
 
 .shine-border::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -1px;
   border-radius: inherit;
-  padding: 1px;
   background: linear-gradient(135deg, rgba(225, 6, 0, 0.5), transparent 40%, rgba(255, 255, 255, 0.08));
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  z-index: -1;
   pointer-events: none;
 }
 
